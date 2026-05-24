@@ -37,10 +37,18 @@ This project completes all the requirements for the bounty:
 
 ## ⚡ Execution
 
-Run the autonomous workflow:
+### 1. Terminal Mode
+Run the autonomous workflow directly in your terminal:
 ```bash
 npm start
 ```
+
+### 2. Dashboard UI Mode (Recommended)
+Launch the beautiful Next.js Glassmorphism dashboard to deploy the agent visually:
+```bash
+npm run dev
+```
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### What happens when you run it?
 1. The agent initializes the **Ace Data Cloud** SDK and injects the **X402PaymentInterceptor** using your Solana Wallet.

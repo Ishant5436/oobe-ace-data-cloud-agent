@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest run",
-    "start": "tsx src/workflows/content_creator.ts"
+    "start": "tsx src/workflows/content_creator.ts",
+    "dev": "cd web && npm run dev"
   },
   "keywords": [],
   "author": "",
