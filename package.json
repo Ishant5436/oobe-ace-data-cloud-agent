@@ -6,6 +6,7 @@
   "scripts": {
     "test": "vitest run",
     "start": "tsx src/workflows/content_creator.ts",
+    "daemon": "tsx src/daemon.ts",
     "dev": "cd web && npm run dev"
   },
   "keywords": [],
@@ -21,11 +22,13 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^25.9.1",
     "jest": "^30.4.2",
+    "node-cron": "^4.2.1",
     "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   },
   "devDependencies": {
+    "@types/node-cron": "^3.0.11",
     "dotenv": "^17.4.2",
     "tsx": "^4.22.3",
     "vitest": "^4.1.7"

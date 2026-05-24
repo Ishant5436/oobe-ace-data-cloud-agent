@@ -1,5 +1,7 @@
 import { setupAgent } from '../agent';
 import * as dotenv from 'dotenv';
+import * as fs from 'fs';
+import * as path from 'path';
 
 dotenv.config();
 
@@ -52,8 +54,29 @@ export async function runContentCreatorWorkflow() {
             input: scriptText
         });
         
-        console.log(`Vector Dimension Length: ${embeddingResponse.data?.[0]?.embedding?.length || 'Unknown'}`);
+        const embeddingData = embeddingResponse.data?.[0]?.embedding;
+        console.log(`Vector Dimension Length: ${embeddingData?.length || 'Unknown'}`);
         console.log('Embeddings Generated Successfully!');
+
+        // Step 4: Save to Long-Term Memory (RAG)
+        console.log('\n--- Step 4: Storing to Persistent Memory Bank ---');
+        const memoryFilePath = path.join(process.cwd(), 'src', 'data', 'memory.json');
+        let memory = [];
+        if (fs.existsSync(memoryFilePath)) {
+            const raw = fs.readFileSync(memoryFilePath, 'utf8');
+            memory = JSON.parse(raw || '[]');
+        }
+        
+        memory.push({
+            id: Date.now().toString(),
+            timestamp: new Date().toISOString(),
+            trend: firstResult,
+            script: scriptText,
+            vector: embeddingData
+        });
+        
+        fs.writeFileSync(memoryFilePath, JSON.stringify(memory, null, 2));
+        console.log(`Saved memory item. Total Memories: ${memory.length}`);
 
         console.log('\n✅ Content Creator Workflow completed successfully!');
         
