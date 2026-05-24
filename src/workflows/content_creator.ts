@@ -4,10 +4,10 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 /**
- * Executes a 3-step autonomous workflow using Ace Data Cloud:
- * 1. AI Chat (gpt-4o) to generate a creative concept.
- * 2. Image Generation (flux) to create a visual for the concept.
- * 3. Audio Generation (suno) to generate a soundtrack for the concept.
+ * Executes a blazing fast 3-step autonomous workflow using Ace Data Cloud:
+ * 1. Search (Google) to find the latest trending topic.
+ * 2. AI Chat (GPT-4o) to summarize the topic into a short script.
+ * 3. Audio (Suno) to generate a quick audio snippet of the script.
  * 
  * All calls are wrapped by the X402 payment interceptor, allowing the agent
  * to autonomously pay for these API calls via Solana if they return a 402.
@@ -20,47 +20,46 @@ export async function runContentCreatorWorkflow() {
         throw new Error('ACE_DATA_CLOUD_API_KEY and SOLANA_PRIVATE_KEY must be set in the environment.');
     }
 
-    // 1. Initialize the agent client with X402 payment handling enabled
     console.log('Initializing Ace Data Cloud Agent with X402 interceptor...');
     const client = setupAgent(apiToken, privateKey);
 
     try {
-        // Step 1: Generate a concept using AI Chat
-        console.log('\n--- Step 1: Generating Concept (AI Chat) ---');
-        const chatResponse: any = await client.aichat.create({
-            model: 'gpt-4o',
-            question: 'Write a very brief, 1-sentence prompt for a beautiful cinematic sci-fi cityscape image.'
+        // Step 1: Search for latest news
+        console.log('\n--- Step 1: Searching for Latest Trends (Google Search) ---');
+        const searchResponse: any = await client.search.google({
+            query: 'latest artificial intelligence breakthroughs today'
         });
         
-        // Extract the response text (assuming OpenAI-like or direct text response format based on typical APIs)
-        // Usually chat APIs return something like { answer: '...' } or { choices: [{ message: { content: '...' } }] }
-        const conceptText = chatResponse.answer || chatResponse.choices?.[0]?.message?.content || 'A futuristic cyberpunk city at night with flying cars and neon lights.';
-        console.log(`Generated Concept: ${conceptText}`);
+        // Extract a snippet from search results
+        const firstResult = searchResponse.organic_results?.[0]?.snippet || 'AI agents are taking over the world.';
+        console.log(`Found Trend: "${firstResult}"`);
 
-        // Step 2: Generate an image using the concept
-        console.log('\n--- Step 2: Generating Image (Flux) ---');
-        const imageResponse: any = await client.images.generate({
-            prompt: conceptText,
-            provider: 'midjourney',
-            size: '1024x1024',
-            wait: true // Assuming the SDK polls or waits for completion if we pass wait: true
+        // Step 2: Generate a script using AI Chat
+        console.log('\n--- Step 2: Generating Script (AI Chat) ---');
+        const chatResponse: any = await client.aichat.create({
+            model: 'gpt-4o',
+            question: `Write a very brief, 1-sentence dramatic summary about this news: ${firstResult}`
         });
-        console.log('Image Generation Result:', imageResponse);
+        
+        const scriptText = chatResponse.answer || chatResponse.choices?.[0]?.message?.content || 'In a stunning leap, AI agents have evolved to act autonomously.';
+        console.log(`Generated Script: ${scriptText}`);
 
         // Step 3: Generate audio/music using the concept
         console.log('\n--- Step 3: Generating Soundtrack (Suno) ---');
+        console.log('(This step may take ~10-20 seconds...)');
         const audioResponse: any = await client.audio.generate({
-            prompt: `Cinematic sci-fi soundtrack for this scene: ${conceptText}`,
+            prompt: `Dramatic cinematic intro music for this script: ${scriptText}`,
             provider: 'suno',
             wait: true
         });
+        
         console.log('Audio Generation Result:', audioResponse);
 
         console.log('\n✅ Content Creator Workflow completed successfully!');
         
         return {
-            concept: conceptText,
-            image: imageResponse,
+            trend: firstResult,
+            script: scriptText,
             audio: audioResponse
         };
 
