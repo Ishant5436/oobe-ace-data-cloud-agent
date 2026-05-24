@@ -44,23 +44,23 @@ export async function runContentCreatorWorkflow() {
         const scriptText = chatResponse.answer || chatResponse.choices?.[0]?.message?.content || 'In a stunning leap, AI agents have evolved to act autonomously.';
         console.log(`Generated Script: ${scriptText}`);
 
-        // Step 3: Generate audio/music using the concept
-        console.log('\n--- Step 3: Generating Soundtrack (Suno) ---');
-        console.log('(This step may take ~10-20 seconds...)');
-        const audioResponse: any = await client.audio.generate({
-            prompt: `Dramatic cinematic intro music for this script: ${scriptText}`,
-            provider: 'suno',
-            wait: true
+        // Step 3: Vectorize the script (Embeddings)
+        console.log('\n--- Step 3: Vectorizing Script (OpenAI Embeddings) ---');
+        console.log('(This step is instantaneous...)');
+        const embeddingResponse: any = await client.openai.embeddings.create({
+            model: 'text-embedding-3-small',
+            input: scriptText
         });
         
-        console.log('Audio Generation Result:', audioResponse);
+        console.log(`Vector Dimension Length: ${embeddingResponse.data?.[0]?.embedding?.length || 'Unknown'}`);
+        console.log('Embeddings Generated Successfully!');
 
         console.log('\n✅ Content Creator Workflow completed successfully!');
         
         return {
             trend: firstResult,
             script: scriptText,
-            audio: audioResponse
+            vectorized: true
         };
 
     } catch (error: any) {
